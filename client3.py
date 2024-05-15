@@ -29,20 +29,25 @@ QUERY = "http://localhost:8080/query?id={}"
 N = 500
 
 
-def getDataPoint(quote):
+def getDataPoint(quote): #return correct tuple of stock name, bid_price, ask_price, and price
     """ Produce all the needed values to generate a datapoint """
     """ ------------- Update this function ------------- """
     stock = quote['stock']
     bid_price = float(quote['top_bid']['price'])
     ask_price = float(quote['top_ask']['price'])
-    price = bid_price
+    price = (bid_price + ask_price)/2
     return stock, bid_price, ask_price, price
 
 
-def getRatio(price_a, price_b):
+def getRatio(price_a, price_b): # gt the ratio of two stock prices
     """ Get ratio of price_a and price_b """
     """ ------------- Update this function ------------- """
-    return 1
+    """Also create some unit tests for this function in client_test.py"""
+    if (price_b == 0):
+        raise ValueError("Error: Division by zero encountered while calculating stock ratio.")
+    elif (price_b < 0):
+        raise ValueError("Error: Invalid input value. Stock values must be non-negative.")
+    return price_a/price_b
 
 
 # Main
@@ -52,8 +57,10 @@ if __name__ == "__main__":
         quotes = json.loads(urllib.request.urlopen(QUERY.format(random.random())).read())
 
         """ ----------- Update to get the ratio --------------- """
+        prices = {}
         for quote in quotes:
             stock, bid_price, ask_price, price = getDataPoint(quote)
+            prices[stock] = price
             print("Quoted %s at (bid:%s, ask:%s, price:%s)" % (stock, bid_price, ask_price, price))
 
-        print("Ratio %s" % getRatio(price, price))
+        print("Ratio %s" % getRatio(prices["ABC"], prices["DEF"]))
